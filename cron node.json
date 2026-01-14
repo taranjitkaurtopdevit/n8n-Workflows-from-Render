@@ -1,0 +1,175 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2025-12-22T18:45:13.296Z",
+    "createdAt": "2025-12-22T18:44:50.662Z",
+    "versionId": "7957bcd0-0509-497b-9c04-17a57eac451d",
+    "workflowId": "EWoLczXnHA8oYMnY",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          0,
+          0
+        ],
+        "id": "e7f28d7b-cf6d-47fc-8176-867b242bc104",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "value": "public",
+            "mode": "list",
+            "cachedResultName": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "workflow_entity",
+            "mode": "list",
+            "cachedResultName": "workflow_entity"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          208,
+          0
+        ],
+        "id": "61b263c8-1bb4-4b6d-a7f5-e95529d40667",
+        "name": "Select rows from a table",
+        "credentials": {
+          "postgres": {
+            "id": "ircFfyo7U29lR7te",
+            "name": "Postgres account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Taranjit Kaur",
+    "name": "Version 7957bcd0",
+    "description": "",
+    "autosaved": false
+  },
+  "activeVersionId": "7957bcd0-0509-497b-9c04-17a57eac451d",
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-22T18:36:32.554Z",
+  "id": "EWoLczXnHA8oYMnY",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "cron node",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e7f28d7b-cf6d-47fc-8176-867b242bc104",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "workflow_entity",
+          "mode": "list",
+          "cachedResultName": "workflow_entity"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "61b263c8-1bb4-4b6d-a7f5-e95529d40667",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "ircFfyo7U29lR7te",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-22T18:36:32.554Z",
+      "createdAt": "2025-12-22T18:36:32.554Z",
+      "role": "workflow:owner",
+      "workflowId": "EWoLczXnHA8oYMnY",
+      "projectId": "TKNdb1MCnrHRi1L6"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-22T18:44:50.381Z",
+  "versionId": "7957bcd0-0509-497b-9c04-17a57eac451d"
+}
