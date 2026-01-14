@@ -1,0 +1,747 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2025-12-05T06:50:08.194Z",
+    "createdAt": "2025-12-05T06:50:08.194Z",
+    "versionId": "3966db73-aab1-4f71-8a2d-2b3648c9197c",
+    "workflowId": "fNZwNs54KirBtbTY",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 10
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -2688,
+          144
+        ],
+        "id": "bb523be0-e7b7-4a5f-9b64-9d5cc5e78fe3",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "Give me 1 trending lifestyle topic in JSON:\n\n{\n  \"topic\": \"...\"\n}\n\nNo markdown.\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1,
+        "position": [
+          -2464,
+          144
+        ],
+        "id": "0aab16ce-300b-46f5-9dba-488a58ad7544",
+        "name": "Fetch Trending Topics",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "RzKF6qrGvIyvdP3k",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get raw text inside the AI response\nlet raw = $json.content.parts[0].text;\n\n// Remove code fences if they exist\nraw = raw.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n// Parse JSON safely\nconst parsed = JSON.parse(raw);\n\n// Return correct n8n item\nreturn {\n  json: parsed\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2112,
+          144
+        ],
+        "id": "b62cc39c-f0c2-4b6a-bcd4-e6cab345b346",
+        "name": "parse the trend prompt into JSON"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=Write a tweet title, description, and hashtags for this topic:\n{{$json.topic}}\n\nReturn ONLY JSON:\n{\n \"title\": \"\",\n \"description\": \"\",\n \"hashtags\": []\n}\n\nNo markdown.\nit should be under 280 characters\n\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1,
+        "position": [
+          -1888,
+          144
+        ],
+        "id": "30806047-b165-478f-9789-ccb84af3310a",
+        "name": "create title, description, hashtags",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "RzKF6qrGvIyvdP3k",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Extract the raw JSON string inside AI response\nlet raw = $json.content.parts[0].text;\n\n// Remove code block markers if present\nraw = raw.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n// Parse into an object\nconst parsed = JSON.parse(raw);\n\n// Return correctly formatted n8n item\nreturn {\n  json: parsed\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1536,
+          144
+        ],
+        "id": "6be3bec1-da6f-4d57-9e81-1c1449145ba1",
+        "name": "parse title, desc, tags to json"
+      },
+      {
+        "parameters": {
+          "jsCode": "const prompt = encodeURIComponent($json.title);\nreturn {\n  json: {\n    title: $json.title,\n    description: $json.description,\n    hashtags: $json.hashtags,\n    image_url: `https://image.pollinations.ai/prompt/${prompt}`\n  }\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1312,
+          144
+        ],
+        "id": "48f41ef1-c3bd-44f6-b703-5712c4ec5b7a",
+        "name": "generate image url and parse into json"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.image_url }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -1088,
+          144
+        ],
+        "id": "c2a00d9d-ca37-46eb-a89b-e5cbdbf575a6",
+        "name": "download image to upload"
+      },
+      {
+        "parameters": {
+          "sendTo": "taranjitkaur.topdevit@gmail.com",
+          "subject": "={{ $('parse title, desc, tags to json').item.json.title }}",
+          "message": "={{ $('parse title, desc, tags to json').item.json.description }}\n\n<img src=\"{{ $json.image_url }}\" style=\"max-width: 600px;\">\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -864,
+          240
+        ],
+        "id": "c055d687-0106-4b63-a69e-2981a91ec8df",
+        "name": "Send an mail of content along with photo",
+        "webhookId": "b6ad2c69-da6e-418f-9985-2465c426fefa",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "Z1sOpsIzjnV76z3t",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://upload.twitter.com/1.1/media/upload.json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth1Api",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "media",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -864,
+          48
+        ],
+        "id": "bb228beb-76bc-4bbc-9021-4b419992051c",
+        "name": "create media ID",
+        "credentials": {
+          "oAuth1Api": {
+            "id": "k0Bak8pIE1kgZijI",
+            "name": "Unnamed credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.twitter.com/1.1/statuses/update.json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth1Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "status",
+                "value": "={{ $('generate image url and parse into json').item.json.title }}\n{{ $('generate image url and parse into json').item.json.description }}\n{{ $('generate image url and parse into json').item.json.hashtags }}"
+              },
+              {
+                "name": "media_ids",
+                "value": "={{ $json.media_id_string }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -640,
+          -48
+        ],
+        "id": "2f9b6ec0-387e-4f29-bd99-02fa1df16708",
+        "name": "upload with media (premium)",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "text": "={{ $('generate image url and parse into json').item.json.title }}\n{{ $('generate image url and parse into json').item.json.description }}\n\n",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.twitter",
+        "typeVersion": 2,
+        "position": [
+          -640,
+          144
+        ],
+        "id": "5277777e-be88-4cab-91c1-2ec1bc6d345e",
+        "name": "Upload without media",
+        "credentials": {
+          "twitterOAuth2Api": {
+            "id": "EwMFlmlyoOfpN4sF",
+            "name": "X account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Fetch Trending Topics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Trending Topics": {
+        "main": [
+          [
+            {
+              "node": "parse the trend prompt into JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "parse the trend prompt into JSON": {
+        "main": [
+          [
+            {
+              "node": "create title, description, hashtags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create title, description, hashtags": {
+        "main": [
+          [
+            {
+              "node": "parse title, desc, tags to json",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "parse title, desc, tags to json": {
+        "main": [
+          [
+            {
+              "node": "generate image url and parse into json",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "generate image url and parse into json": {
+        "main": [
+          [
+            {
+              "node": "download image to upload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "download image to upload": {
+        "main": [
+          [
+            {
+              "node": "Send an mail of content along with photo",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "create media ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create media ID": {
+        "main": [
+          [
+            {
+              "node": "upload with media (premium)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Upload without media",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Taranjit Kaur",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "activeVersionId": "3966db73-aab1-4f71-8a2d-2b3648c9197c",
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Trending Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Trending Topics": {
+      "main": [
+        [
+          {
+            "node": "parse the trend prompt into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse the trend prompt into JSON": {
+      "main": [
+        [
+          {
+            "node": "create title, description, hashtags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create title, description, hashtags": {
+      "main": [
+        [
+          {
+            "node": "parse title, desc, tags to json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse title, desc, tags to json": {
+      "main": [
+        [
+          {
+            "node": "generate image url and parse into json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate image url and parse into json": {
+      "main": [
+        [
+          {
+            "node": "download image to upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download image to upload": {
+      "main": [
+        [
+          {
+            "node": "Send an mail of content along with photo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "create media ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create media ID": {
+      "main": [
+        [
+          {
+            "node": "upload with media (premium)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload without media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-05T06:50:08.194Z",
+  "id": "fNZwNs54KirBtbTY",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AI pinterest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2688,
+        144
+      ],
+      "id": "bb523be0-e7b7-4a5f-9b64-9d5cc5e78fe3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Give me 1 trending lifestyle topic in JSON:\n\n{\n  \"topic\": \"...\"\n}\n\nNo markdown.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2464,
+        144
+      ],
+      "id": "0aab16ce-300b-46f5-9dba-488a58ad7544",
+      "name": "Fetch Trending Topics",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RzKF6qrGvIyvdP3k",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get raw text inside the AI response\nlet raw = $json.content.parts[0].text;\n\n// Remove code fences if they exist\nraw = raw.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n// Parse JSON safely\nconst parsed = JSON.parse(raw);\n\n// Return correct n8n item\nreturn {\n  json: parsed\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        144
+      ],
+      "id": "b62cc39c-f0c2-4b6a-bcd4-e6cab345b346",
+      "name": "parse the trend prompt into JSON"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Write a tweet title, description, and hashtags for this topic:\n{{$json.topic}}\n\nReturn ONLY JSON:\n{\n \"title\": \"\",\n \"description\": \"\",\n \"hashtags\": []\n}\n\nNo markdown.\nit should be under 280 characters\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        144
+      ],
+      "id": "30806047-b165-478f-9789-ccb84af3310a",
+      "name": "create title, description, hashtags",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RzKF6qrGvIyvdP3k",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the raw JSON string inside AI response\nlet raw = $json.content.parts[0].text;\n\n// Remove code block markers if present\nraw = raw.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n// Parse into an object\nconst parsed = JSON.parse(raw);\n\n// Return correctly formatted n8n item\nreturn {\n  json: parsed\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        144
+      ],
+      "id": "6be3bec1-da6f-4d57-9e81-1c1449145ba1",
+      "name": "parse title, desc, tags to json"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prompt = encodeURIComponent($json.title);\nreturn {\n  json: {\n    title: $json.title,\n    description: $json.description,\n    hashtags: $json.hashtags,\n    image_url: `https://image.pollinations.ai/prompt/${prompt}`\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        144
+      ],
+      "id": "48f41ef1-c3bd-44f6-b703-5712c4ec5b7a",
+      "name": "generate image url and parse into json"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1088,
+        144
+      ],
+      "id": "c2a00d9d-ca37-46eb-a89b-e5cbdbf575a6",
+      "name": "download image to upload"
+    },
+    {
+      "parameters": {
+        "sendTo": "taranjitkaur.topdevit@gmail.com",
+        "subject": "={{ $('parse title, desc, tags to json').item.json.title }}",
+        "message": "={{ $('parse title, desc, tags to json').item.json.description }}\n\n<img src=\"{{ $json.image_url }}\" style=\"max-width: 600px;\">\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -864,
+        240
+      ],
+      "id": "c055d687-0106-4b63-a69e-2981a91ec8df",
+      "name": "Send an mail of content along with photo",
+      "webhookId": "b6ad2c69-da6e-418f-9985-2465c426fefa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Z1sOpsIzjnV76z3t",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth1Api",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "media",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -864,
+        48
+      ],
+      "id": "bb228beb-76bc-4bbc-9021-4b419992051c",
+      "name": "create media ID",
+      "credentials": {
+        "oAuth1Api": {
+          "id": "k0Bak8pIE1kgZijI",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twitter.com/1.1/statuses/update.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth1Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "={{ $('generate image url and parse into json').item.json.title }}\n{{ $('generate image url and parse into json').item.json.description }}\n{{ $('generate image url and parse into json').item.json.hashtags }}"
+            },
+            {
+              "name": "media_ids",
+              "value": "={{ $json.media_id_string }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -640,
+        -48
+      ],
+      "id": "2f9b6ec0-387e-4f29-bd99-02fa1df16708",
+      "name": "upload with media (premium)",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "text": "={{ $('generate image url and parse into json').item.json.title }}\n{{ $('generate image url and parse into json').item.json.description }}\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        144
+      ],
+      "id": "5277777e-be88-4cab-91c1-2ec1bc6d345e",
+      "name": "Upload without media",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "EwMFlmlyoOfpN4sF",
+          "name": "X account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-05T06:50:08.194Z",
+      "createdAt": "2025-12-05T06:50:08.194Z",
+      "role": "workflow:owner",
+      "workflowId": "fNZwNs54KirBtbTY",
+      "projectId": "TKNdb1MCnrHRi1L6"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-08T04:10:59.703Z",
+  "versionId": "3966db73-aab1-4f71-8a2d-2b3648c9197c"
+}
