@@ -1,0 +1,1919 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-07T05:56:27.035Z",
+    "createdAt": "2026-01-07T05:55:48.200Z",
+    "versionId": "a036fc81-3be1-4f2a-a327-7b09cd37bc22",
+    "workflowId": "ldoBkvAD4jh6mVzW",
+    "nodes": [
+      {
+        "parameters": {
+          "public": true,
+          "mode": "webhook",
+          "options": {
+            "responseMode": "lastNode"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          0,
+          160
+        ],
+        "id": "7eabc5cd-2b14-4dfb-8717-031131c5840c",
+        "name": "When chat message received",
+        "webhookId": "b4cd647e-0edc-41e9-a387-5e8215d5d64a"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+            "mode": "list",
+            "cachedResultName": "NBPB DB",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Data",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Session ID",
+                "lookupValue": "={{ $json.sessionId }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          224,
+          160
+        ],
+        "id": "eef33e0b-7c4d-4f82-a0b2-631180cfc037",
+        "name": "Exisiting Session",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  return {\n    json: {\n      existing_session: { ...item.json }\n    }\n  };\n});\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          160
+        ],
+        "id": "4310fa1f-e299-4062-bbae-798eadca1ea3",
+        "name": "JSON of Existing Session"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3e04bc8c-0b83-4aa0-b7d8-06fa99da3f70",
+                "leftValue": "={{ $json.existing_session['Session ID'] }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          672,
+          160
+        ],
+        "id": "48f95d18-6016-4da9-bf39-a4229849729f",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+            "mode": "list",
+            "cachedResultName": "NBPB DB",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Data",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Session ID": "={{ $('When chat message received').item.json.sessionId }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Session ID",
+                "displayName": "Session ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Type",
+                "displayName": "Page Type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Name",
+                "displayName": "Page Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Title",
+                "displayName": "Page Title",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Slug",
+                "displayName": "Page Slug",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Who can Post",
+                "displayName": "Who can Post",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Who can sign",
+                "displayName": "Who can sign",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Max Amount",
+                "displayName": "Max Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Preset Amount",
+                "displayName": "Preset Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Completed",
+                "displayName": "Completed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          896,
+          80
+        ],
+        "id": "b0a5e033-5424-4aaa-a1d0-b5594ca1dac4",
+        "name": "Append row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU",
+            "mode": "list",
+            "cachedResultName": "NB Training Sheet",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "page_rules",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit#gid=0"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1568,
+          160
+        ],
+        "id": "2d96422e-3a41-4a66-883b-398a026f0fcd",
+        "name": "Page Rules and Required Fields",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst existing_page_type = $('JSON of Existing Session1').first().json.existing_session['Page Type'];\n\nreturn [\n  {\n    json: {\n      page_type_and_required_fields: items.map(i => i.json),\n      existing_page_type\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1792,
+          160
+        ],
+        "id": "80a9e342-eae3-4c49-94d7-4361a12db427",
+        "name": "JSON of Page Rules and Required Fields"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU",
+            "mode": "list",
+            "cachedResultName": "NB Training Sheet",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1141537885,
+            "mode": "list",
+            "cachedResultName": "page_conditions",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit#gid=1141537885"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "page_type",
+                "lookupValue": "={{ $json.existing_page_type }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2016,
+          160
+        ],
+        "id": "dbcc0055-011b-4d73-9b22-8e7ea112fdf3",
+        "name": "Page type and their conditions",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst page_rules = $('JSON of Page Rules and Required Fields').first().json.page_type_and_required_fields;\nconst existing_session = $('JSON of Existing Session1').first().json.existing_session;\nconst chat_input = $('When chat message received').first().json.chatInput;\nreturn [\n  {\n    json: {\n      page_type_and_their_conditions: items.map(item => item.json),\n      page_rules,\n      existing_session,\n      chat_input\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2240,
+          160
+        ],
+        "id": "a034c591-047f-4423-92ff-c1939103db05",
+        "name": "JSON of Page type and their conditions"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+            "mode": "list",
+            "cachedResultName": "NBPB DB",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Data",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Session ID",
+                "lookupValue": "={{ $('When chat message received').item.json.sessionId }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1120,
+          160
+        ],
+        "id": "7c7e07bf-1a16-4736-bcda-4b6dc9669594",
+        "name": "Exisiting Session1",
+        "alwaysOutputData": false,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  return {\n    json: {\n      existing_session: { ...item.json }\n    }\n  };\n});\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1344,
+          160
+        ],
+        "id": "e5c892cd-c38c-4c80-969b-32983772d2a8",
+        "name": "JSON of Existing Session1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const rawText = $input.first().json.output[0].content[0].text;\n\n// Remove ```json, ``` and trim whitespace\nconst cleanedText = rawText\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst parsed = JSON.parse(cleanedText);\n\nreturn [\n  {\n    json: {\n      chat_input: parsed.prompt_for_user,\n      updated_existing_session: parsed.updated_existing_session\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2816,
+          160
+        ],
+        "id": "c0ebdaf5-982a-410b-83ad-9ff7d3c2b788",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+            "mode": "list",
+            "cachedResultName": "NBPB DB",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Data",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Session ID": "={{ $('JSON of Page type and their conditions').item.json.existing_session['Session ID'] }}",
+              "Page Type": "={{ $json.updated_existing_session['Page Type'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Type'] }}",
+              "Page Name": "={{ $json.updated_existing_session['Page Name'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Title'] }}",
+              "Page Title": "={{ $json.updated_existing_session['Page Title'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Title'] }}",
+              "Page Slug": "={{ $json.updated_existing_session['Page Slug'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Slug'] }}",
+              "Who can Post": "={{ $json.updated_existing_session['Who can Post'] || $('JSON of Page type and their conditions').item.json.existing_session['Who can Post'] }}",
+              "Who can sign": "={{ $json.updated_existing_session['Who can sign'] || $('JSON of Page type and their conditions').item.json.existing_session['Who can sign'] }}",
+              "Max Amount": "={{ $json.updated_existing_session['Max Amount'] || $('JSON of Page type and their conditions').item.json.existing_session['Max Amount'] }}",
+              "Preset Amount": "={{ $json.updated_existing_session['Preset Amount'] || $('JSON of Page type and their conditions').item.json.existing_session['Preset Amount'] }}",
+              "Completed": "={{ $json.updated_existing_session['Completed'] || $('JSON of Page type and their conditions').item.json.existing_session.Completed }}"
+            },
+            "matchingColumns": [
+              "Session ID"
+            ],
+            "schema": [
+              {
+                "id": "Session ID",
+                "displayName": "Session ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Page Type",
+                "displayName": "Page Type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Name",
+                "displayName": "Page Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Title",
+                "displayName": "Page Title",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Page Slug",
+                "displayName": "Page Slug",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Who can Post",
+                "displayName": "Who can Post",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Who can sign",
+                "displayName": "Who can sign",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Max Amount",
+                "displayName": "Max Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Preset Amount",
+                "displayName": "Preset Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Completed",
+                "displayName": "Completed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          3040,
+          160
+        ],
+        "id": "01cbe133-d114-43b8-8690-2f1fcf845cf8",
+        "name": "Update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "iRgwjesZwOs1acM1",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst prompt_to_user = $('Code in JavaScript').first().json.chat_input;\nreturn {prompt_to_user};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3264,
+          160
+        ],
+        "id": "4dcb65cc-9d79-448f-95f2-d03e26cca0ba",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4O-MINI"
+          },
+          "responses": {
+            "values": [
+              {
+                "content": "=You are a deterministic state-machine assistant for a page-creation chatbot.\n\nYou must follow every rule exactly. Any violation is an error.\n\n==============================\nPRIMARY OBJECTIVE\n\nGuide the user step-by-step to complete page creation.\n\n• Ask exactly one question at a time\n• Never skip steps\n• Never repeat a step that is already completed\n\n==============================\nABSOLUTE RULES (NON-NEGOTIABLE)\n\n• Use only the data explicitly provided in INPUT DATA\n• Do not infer, guess, summarize, or assume intent\n• Do not invent values\n• Extract only values explicitly stated by the user\n• Ask only one question per response\n• Do not include explanations, markdown, labels, or formatting\n• Output nothing outside the JSON object\n• Never return empty strings for missing values\n• Never ask for a field that already has a value\n• If the user greets, respond with a greeting only\n\n==============================\nFIELD RULES\n\n• page_type is mandatory and must be collected first\n\n• Allowed page types (exact match only):\nbasic\nblog\npetition\ndonation\ncalendar\n\n• A field is considered missing if:\n\nit is null\n\nit is empty\n\nit does not exist\n\n• Required fields must be asked in the exact order defined in PAGE RULES\n• Ask only the next missing required field\n\n==============================\nREQUIRED-FIELD COMPLETION RULES\n\n• If no required fields are pending:\n\nInform the user that the page will be created shortly\n\nThen proceed to condition handling (if applicable)\n\n==============================\nCONDITION RULES\n\nConditions apply only if all are true:\n• page_type is filled\n• All required fields are filled\n• At least one condition exists for the page type\n\nA condition exists only if:\n• page_type_and_their_conditions contains an entry whose\npage_type exactly matches existing_session.page_type\n\nCondition handling rules:\n• Ask only one condition field at a time\n• Select conditions only from matching page_type entries\n• Never ask condition questions for page types without conditions\n\n• If no conditions exist for the page type:\n\nDo NOT ask any condition questions\n\nImmediately proceed to completion\n\n==============================\nSYSTEM COMPLETION RULE (CRITICAL)\n\nThe field Completed is a system-controlled field.\n\n• It MUST be set to \"true\" when:\n\nAll required fields are filled\n\nAND all applicable conditions are filled\n\n• This update MUST happen even if the user did not explicitly mention it\n\n==============================\nCOMPLETION RESPONSE RULE\n\nWhen completion occurs, return exactly:\n\n{\n\"updated_existing_session\": {\n\"Completed\": \"true\"\n},\n\"prompt_for_user\": \"Your page will be created shortly. Do you want to create a new page?\"\n}\n\n==============================\nPOST-COMPLETION BEHAVIOR\n\nIf existing_session.Completed is \"true\":\n\n• Do NOT ask any required fields\n• Do NOT ask any condition fields\n\nIf the user input indicates YES:\n• Ask no further questions\n• Do NOT reuse this session (frontend will create a new session)\n\nIf the user input is NO or indicates refusal:\n• Do NOT repeat the new-page question\n• Respond with a polite closing message\n• End the conversation\n\nExample closing message:\n\"Thank you. Have a nice day.\"\n\n==============================\nINPUT DATA (SOURCE OF TRUTH)\n\nSESSION DATA:\n{{ JSON.stringify($json.existing_session) }}\n\nPAGE RULES:\n{{ JSON.stringify($json.page_rules) }}\n\nPAGE CONDITIONS:\n{{ JSON.stringify($json.page_type_and_their_conditions) }}\n\nUSER INPUT:\n{{ $json.chat_input }}\n\n==============================\nOUTPUT FORMAT (STRICT)\n\nReturn exactly one JSON object and nothing else:\n\n{\n\"updated_existing_session\": {},\n\"prompt_for_user\": \"\"\n}\n\n==============================\nupdated_existing_session RULES\n\n• Include only fields explicitly stated by the user\n• EXCEPTION: Completed may be set by the system\n• Do not include unchanged fields\n• If the user provided nothing new, return {}\n\n==============================\nprompt_for_user RULES\n\n• Must be a non-empty string if anything is missing\n• Ask only the next required field or condition\n• If everything is complete, follow completion rules\n• If the user greets, respond with a greeting only\n\n==============================\nPRIORITY ORDER (IF CONFLICT OCCURS)\n\nAsk the correct next missing field\n\nProduce valid JSON\n\nEnsure prompt_for_user is non-empty"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.1,
+        "position": [
+          2464,
+          160
+        ],
+        "id": "9daec8d1-9d06-47fb-92bc-2c11bc4931dd",
+        "name": "Message a model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "jpv9j9QcfapweeyW",
+            "name": "OpenAi account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Exisiting Session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Exisiting Session": {
+        "main": [
+          [
+            {
+              "node": "JSON of Existing Session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON of Existing Session": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Exisiting Session1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [
+            {
+              "node": "Exisiting Session1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Page Rules and Required Fields": {
+        "main": [
+          [
+            {
+              "node": "JSON of Page Rules and Required Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON of Page Rules and Required Fields": {
+        "main": [
+          [
+            {
+              "node": "Page type and their conditions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Page type and their conditions": {
+        "main": [
+          [
+            {
+              "node": "JSON of Page type and their conditions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON of Page type and their conditions": {
+        "main": [
+          [
+            {
+              "node": "Message a model1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Exisiting Session1": {
+        "main": [
+          [
+            {
+              "node": "JSON of Existing Session1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON of Existing Session1": {
+        "main": [
+          [
+            {
+              "node": "Page Rules and Required Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update row in sheet": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message a model1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Taranjit Kaur",
+    "name": "Version a036fc81",
+    "description": "",
+    "autosaved": false
+  },
+  "activeVersionId": "a036fc81-3be1-4f2a-a327-7b09cd37bc22",
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Exisiting Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exisiting Session": {
+      "main": [
+        [
+          {
+            "node": "JSON of Existing Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON of Existing Session": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Exisiting Session1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Exisiting Session1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Page Rules and Required Fields": {
+      "main": [
+        [
+          {
+            "node": "JSON of Page Rules and Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON of Page Rules and Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Page type and their conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Page type and their conditions": {
+      "main": [
+        [
+          {
+            "node": "JSON of Page type and their conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON of Page type and their conditions": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exisiting Session1": {
+      "main": [
+        [
+          {
+            "node": "JSON of Existing Session1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON of Existing Session1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Page Rules and Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-06T04:50:47.703Z",
+  "id": "ldoBkvAD4jh6mVzW",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "NBPB formatted with one AI",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "7eabc5cd-2b14-4dfb-8717-031131c5840c",
+      "name": "When chat message received",
+      "webhookId": "b4cd647e-0edc-41e9-a387-5e8215d5d64a"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+          "mode": "list",
+          "cachedResultName": "NBPB DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Session ID",
+              "lookupValue": "={{ $json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "eef33e0b-7c4d-4f82-a0b2-631180cfc037",
+      "name": "Exisiting Session",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  return {\n    json: {\n      existing_session: { ...item.json }\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "4310fa1f-e299-4062-bbae-798eadca1ea3",
+      "name": "JSON of Existing Session"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3e04bc8c-0b83-4aa0-b7d8-06fa99da3f70",
+              "leftValue": "={{ $json.existing_session['Session ID'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        -48
+      ],
+      "id": "48f95d18-6016-4da9-bf39-a4229849729f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+          "mode": "list",
+          "cachedResultName": "NBPB DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Session ID": "={{ $('When chat message received').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Session ID",
+              "displayName": "Session ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Type",
+              "displayName": "Page Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Name",
+              "displayName": "Page Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Title",
+              "displayName": "Page Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Slug",
+              "displayName": "Page Slug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Who can Post",
+              "displayName": "Who can Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Who can sign",
+              "displayName": "Who can sign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Max Amount",
+              "displayName": "Max Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preset Amount",
+              "displayName": "Preset Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Completed",
+              "displayName": "Completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -128
+      ],
+      "id": "b0a5e033-5424-4aaa-a1d0-b5594ca1dac4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU",
+          "mode": "list",
+          "cachedResultName": "NB Training Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "page_rules",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        48
+      ],
+      "id": "2d96422e-3a41-4a66-883b-398a026f0fcd",
+      "name": "Page Rules and Required Fields",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst existing_page_type = $('JSON of Existing Session1').first().json.existing_session['Page Type'];\n\nreturn [\n  {\n    json: {\n      page_type_and_required_fields: items.map(i => i.json),\n      existing_page_type\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2016,
+        48
+      ],
+      "id": "80a9e342-eae3-4c49-94d7-4361a12db427",
+      "name": "JSON of Page Rules and Required Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU",
+          "mode": "list",
+          "cachedResultName": "NB Training Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1141537885,
+          "mode": "list",
+          "cachedResultName": "page_conditions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LkdOFh6OyJbXrr6SKvTYZqnDLG1mnK4ovUgl4FOmvdU/edit#gid=1141537885"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "page_type",
+              "lookupValue": "={{ $json.existing_page_type }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2240,
+        48
+      ],
+      "id": "dbcc0055-011b-4d73-9b22-8e7ea112fdf3",
+      "name": "Page type and their conditions",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst page_rules = $('JSON of Page Rules and Required Fields').first().json.page_type_and_required_fields;\nconst existing_session = $('JSON of Existing Session1').first().json.existing_session;\nconst chat_input = $('When chat message received').first().json.chatInput;\nreturn [\n  {\n    json: {\n      page_type_and_their_conditions: items.map(item => item.json),\n      page_rules,\n      existing_session,\n      chat_input\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        48
+      ],
+      "id": "a034c591-047f-4423-92ff-c1939103db05",
+      "name": "JSON of Page type and their conditions"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+          "mode": "list",
+          "cachedResultName": "NBPB DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Session ID",
+              "lookupValue": "={{ $('When chat message received').item.json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        -48
+      ],
+      "id": "7c7e07bf-1a16-4736-bcda-4b6dc9669594",
+      "name": "Exisiting Session1",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  return {\n    json: {\n      existing_session: { ...item.json }\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -48
+      ],
+      "id": "e5c892cd-c38c-4c80-969b-32983772d2a8",
+      "name": "JSON of Existing Session1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output[0].content[0].text;\n\n// Remove ```json, ``` and trim whitespace\nconst cleanedText = rawText\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst parsed = JSON.parse(cleanedText);\n\nconst session = $('JSON of Page type and their conditions').first().json.existing_session;\nconst updated = parsed.updated_existing_session || {};\n\n// HARD COMPLETION CHECK (system, not AI)\nif (\n  session[\"Page Type\"] &&\n  session[\"Page Name\"] &&\n  session[\"Page Title\"] &&\n  session[\"Page Slug\"] &&\n  !session.Completed\n) {\n  updated.Completed = \"true\";\n}\n\nreturn [{\n  json: {\n    chat_input: parsed.prompt_for_user,\n    updated_existing_session: updated\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3040,
+        48
+      ],
+      "id": "c0ebdaf5-982a-410b-83ad-9ff7d3c2b788",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s",
+          "mode": "list",
+          "cachedResultName": "NBPB DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NEum_UCtqJ5e7Z5rIADFj-q1GQjD8BlFGyHOhc00o3s/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Session ID": "={{ $('JSON of Page type and their conditions').item.json.existing_session['Session ID'] }}",
+            "Page Type": "={{ $json.updated_existing_session['Page Type'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Type'] }}",
+            "Page Name": "={{ $json.updated_existing_session['Page Name'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Title'] }}",
+            "Page Title": "={{ $json.updated_existing_session['Page Title'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Title'] }}",
+            "Page Slug": "={{ $json.updated_existing_session['Page Slug'] || $('JSON of Page type and their conditions').item.json.existing_session['Page Slug'] }}",
+            "Who can Post": "={{ $json.updated_existing_session['Who can Post'] || $('JSON of Page type and their conditions').item.json.existing_session['Who can Post'] }}",
+            "Who can sign": "={{ $json.updated_existing_session['Who can sign'] || $('JSON of Page type and their conditions').item.json.existing_session['Who can sign'] }}",
+            "Max Amount": "={{ $json.updated_existing_session['Max Amount'] || $('JSON of Page type and their conditions').item.json.existing_session['Max Amount'] }}",
+            "Preset Amount": "={{ $json.updated_existing_session['Preset Amount'] || $('JSON of Page type and their conditions').item.json.existing_session['Preset Amount'] }}",
+            "Completed": "={{ $json.updated_existing_session['Completed'] || $('JSON of Page type and their conditions').item.json.existing_session.Completed }}"
+          },
+          "matchingColumns": [
+            "Session ID"
+          ],
+          "schema": [
+            {
+              "id": "Session ID",
+              "displayName": "Session ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Page Type",
+              "displayName": "Page Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Name",
+              "displayName": "Page Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Title",
+              "displayName": "Page Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page Slug",
+              "displayName": "Page Slug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Who can Post",
+              "displayName": "Who can Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Who can sign",
+              "displayName": "Who can sign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Max Amount",
+              "displayName": "Max Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preset Amount",
+              "displayName": "Preset Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Completed",
+              "displayName": "Completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3264,
+        48
+      ],
+      "id": "01cbe133-d114-43b8-8690-2f1fcf845cf8",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iRgwjesZwOs1acM1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst prompt_to_user = $('Code in JavaScript').first().json.chat_input;\nreturn {prompt_to_user};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3488,
+        48
+      ],
+      "id": "4dcb65cc-9d79-448f-95f2-d03e26cca0ba",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a deterministic state-machine assistant for a page-creation chatbot.\n\nYou must follow every rule exactly. Any violation is an error.\n\n==============================\nPRIMARY OBJECTIVE\n\nGuide the user step-by-step to complete page creation.\n\n• Ask exactly one question at a time\n• Never skip steps\n• Never repeat a step that is already completed\n\n==============================\nABSOLUTE RULES (NON-NEGOTIABLE)\n\n• Use only the data explicitly provided in INPUT DATA\n• Do not infer, guess, summarize, or assume intent\n• Do not invent values\n• Extract only values explicitly stated by the user\n• Ask only one question per response\n• Do not include explanations, markdown, labels, or formatting\n• Output nothing outside the JSON object\n• Never return empty strings for missing values\n• Never ask for a field that already has a value\n• If the user greets, respond with a greeting only\n\n==============================\nFIELD RULES\n\n• page_type is mandatory and must be collected first\n\n• Allowed page types (exact match only):\nbasic\nblog\npetition\ndonation\ncalendar\n\n• A field is considered missing if:\n\nit is null\n\nit is empty\n\nit does not exist\n\n• Required fields must be asked in the exact order defined in PAGE RULES\n• Ask only the next missing required field\n\n==============================\nREQUIRED-FIELD COMPLETION RULES\n\n• If no required fields are pending:\n\nInform the user that the page will be created shortly\n\nThen proceed to condition handling (if applicable)\n\n==============================\nCONDITION RULES\n\nConditions apply only if all are true:\n• page_type is filled\n• All required fields are filled\n• At least one condition exists for the page type\n\nA condition exists only if:\n• page_type_and_their_conditions contains an entry whose\npage_type exactly matches existing_session.page_type\n\nCondition handling rules:\n• Ask only one condition field at a time\n• Select conditions only from matching page_type entries\n• Never ask condition questions for page types without conditions\n\n• If no conditions exist for the page type:\n\nDo NOT ask any condition questions\n\nImmediately proceed to completion\n\n==============================\nSYSTEM COMPLETION RULE (CRITICAL)\n\nThe field Completed is a system-controlled field.\n\n• It MUST be set to \"true\" when:\n\nAll required fields are filled\n\nAND all applicable conditions are filled\n\n• This update MUST happen even if the user did not explicitly mention it\n\n==============================\nCOMPLETION RESPONSE RULE\n\nWhen completion occurs, return exactly:\n\n{\n\"updated_existing_session\": {\n\"Completed\": \"true\"\n},\n\"prompt_for_user\": \"Your page will be created shortly. Do you want to create a new page?\"\n}\n\n==============================\nPOST-COMPLETION BEHAVIOR\n\nIf existing_session.Completed is \"true\":\n\n• Do NOT ask any required fields\n• Do NOT ask any condition fields\n\nIf the user input indicates YES:\n• Ask no further questions\n• Do NOT reuse this session (frontend will create a new session)\n\nIf the user input is NO or indicates refusal:\n• Do NOT repeat the new-page question\n• Respond with a polite closing message\n• End the conversation\n\nExample closing message:\n\"Thank you. Have a nice day.\"\n\n==============================\nINPUT DATA (SOURCE OF TRUTH)\n\nSESSION DATA:\n{{ JSON.stringify($json.existing_session) }}\n\nPAGE RULES:\n{{ JSON.stringify($json.page_rules) }}\n\nPAGE CONDITIONS:\n{{ JSON.stringify($json.page_type_and_their_conditions) }}\n\nUSER INPUT:\n{{ $json.chat_input }}\n\n==============================\nOUTPUT FORMAT (STRICT)\n\nReturn exactly one JSON object and nothing else:\n\n{\n\"updated_existing_session\": {},\n\"prompt_for_user\": \"\"\n}\n\n==============================\nupdated_existing_session RULES\n\n• Include only fields explicitly stated by the user\n• EXCEPTION: Completed may be set by the system\n• Do not include unchanged fields\n• If the user provided nothing new, return {}\n\n==============================\nprompt_for_user RULES\n\n• Must be a non-empty string if anything is missing\n• Ask only the next required field or condition\n• If everything is complete, follow completion rules\n• If the user greets, respond with a greeting only\n\n==============================\nPRIORITY ORDER (IF CONFLICT OCCURS)\n\nAsk the correct next missing field\n\nProduce valid JSON\n\nEnsure prompt_for_user is non-empty"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2688,
+        48
+      ],
+      "id": "9daec8d1-9d06-47fb-92bc-2c11bc4931dd",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "jpv9j9QcfapweeyW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7650d149-5213-47b5-b6c7-943d39de407e",
+              "leftValue": "={{ $json.existing_session.Completed }}",
+              "rightValue": "TRUE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        -48
+      ],
+      "id": "f7766ad0-25cb-4c63-9dba-e73d58584d33",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst prompt_to_user = \"Thank you for your input\"\n\nreturn {prompt_to_user};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        -144
+      ],
+      "id": "30b6b229-6571-4ad3-8e17-1d51a7f3facb",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "content": "## WORKFLOW DESCRIPTION\n\n\n                               \n\n\n\n",
+        "height": 80,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -496
+      ],
+      "id": "b2d75d17-1723-4b24-a6c2-cec1108e1242",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 2** **FETCH EXISTING SESSION**\n                               \n                               Check if the user has already started this conversation or not.\n",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "a3631735-46d8-488e-af23-fc9762da1d8e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 1** **CHAT TRIGGER**\n                               \n                               The workflow will be triggered once user will send a chat message",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "33a078a5-6494-459d-8941-4f070d6ca0e4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 3** **CREATING JSON OF THE SESSION**\n                               \n                              It will either create an empty JSON or a make JSON of existing session, Data in N8N is dealt with the help of JSON that is why it is known as best data holder for creating N8n Workflows.\n",
+        "height": 112,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "3dea188e-73b9-4eb1-9caa-5e1de6fb9a85",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 4** **IF**\n                               \n                                              This step checks whether a session already exists.\n\nTRUE (Session does not exist / JSON is empty)\n                       A new session is created by appending a row to the database.\n                       After the session is created, the flow is redirected to the FALSE path.\n\nFALSE (Session already exists)\n                     The workflow continues to the common processing steps.\nNote:\nBoth newly created sessions and existing sessions follow the same downstream logic. The TRUE path is used only to create the session, after which execution always rejoins the FALSE path.",
+        "height": 320,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "44561ccb-2e6c-417e-b577-e76d78b8e548",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 5** **FETCH THE EXISTING SESSION**\n                               \n                               Again load the session and create a new array with all the fields available",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "343766d1-37aa-42be-b659-263062aae675",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 6** **CREATING JSON OF THE SESSION**\n                               \n                              It will create a JSON of existing session. if newly built then all fields except the session id will be empty, otherwise only missing fields would be empty \n",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "4c3ceb3a-9db2-4024-af90-b0edf575a8f8",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 7** **CREATING JSON OF THE SESSION**\n                               \n                              It will create a JSON of existing session. if newly built then all fields except the session id will be empty, otherwise only missing fields would be empty \n",
+        "height": 112,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "17f229bc-e740-4d0b-a6dc-0b184724634e",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 8** **IF**\n                               \n                               This step checks whether details of session already exists.\n\nTRUE (Session details does not exist )\n                       It will then go to the main part  of deducing rules and conditions and collect data into the google sheet\n\nFALSE (Session details exists)\n                     The workflow ends with thank you note.",
+        "height": 256,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "cabb008d-4ca5-4de4-9713-42887cb5ab8a",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 9** **PAGE RULES & REQUIRED FIELDS**(Workflow of Data collection False Node) \n                               \n                               Get google Sheet where page rules and conditions are written",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "3b533da7-a6a8-4f11-98a5-3fff6469bac0",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 11** **PAGE CONDITIONS ACCORDING TO PAGE TYPE**\n                               \n                               Get google Sheet where page conditions are according to page type",
+        "height": 112,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "9914dc15-019a-4090-b6a2-a8886d8f706a",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 10** **CREATING JSON OF THE PAGE RULES AND REQUIRED FIELDS**\n                               \n                              Convert the page rules and required fields to JSON",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "5efdab48-f382-4c9b-9ff5-ae4d84622c6b",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 12** **CREATING JSON OF THE PAGE CONDITIONS ACCORDING TO PAGE RULE**\n                               \n                              Convert the page conditions according to page rules to JSON",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "2d548680-0ff0-4e5e-a59e-dcd286621df5",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 13** **Prompt the AI**(Here I used OPEN AI model) \n                               \n                               Give strict instructions to the AI About what required fields are what page conditions are necessary to ask \nDefine rules and also pass the strict output format",
+        "height": 144,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "b284beee-009b-4bdc-a4be-056afe0b0210",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 14** **CONVERT THE AI RESPONSE TO JSON**\n                               \n                               Convert the AI response to JSON ",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1936,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "037fe25b-f1c5-4aa2-9405-ec8fb1545690",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 15** **Update the Data in google sheet**\n                               \n                               Call Google Sheet and Update the Data according to columns ",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1936,
+        -672
+      ],
+      "typeVersion": 1,
+      "id": "b0c94b06-4d1b-41cd-844c-2976f638072a",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "\n**STEP  - 16** **SEND THE PROMPT TO USER**\n                               \n                               Call Google Sheet and Update the Data according to columns ",
+        "height": 96,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1936,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "d768bcc8-c497-4683-8d1d-c100ad0ea550",
+      "name": "Sticky Note16"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-06T04:50:47.703Z",
+      "createdAt": "2026-01-06T04:50:47.703Z",
+      "role": "workflow:owner",
+      "workflowId": "ldoBkvAD4jh6mVzW",
+      "projectId": "TKNdb1MCnrHRi1L6"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-12T08:44:50.492Z",
+  "versionId": "c57d5c25-65a0-4df3-ad0f-e4f28209c54e"
+}
