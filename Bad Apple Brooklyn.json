@@ -1,0 +1,513 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2025-12-24T05:19:42.342Z",
+    "createdAt": "2025-12-24T04:54:38.201Z",
+    "versionId": "dcb5ad55-58ad-4b5c-9021-131d83bbad11",
+    "workflowId": "PLMsMCdFF0H6EcJ6",
+    "nodes": [
+      {
+        "parameters": {
+          "public": true,
+          "mode": "webhook",
+          "options": {
+            "responseMode": "lastNode"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          -480,
+          -112
+        ],
+        "id": "0d46036c-0022-48de-b1fa-b7448f2c5820",
+        "name": "When chat message received",
+        "webhookId": "5a0fb15a-97b9-4dd3-99be-2001d2276c66"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1RefGgkZHinQ6DnGCGhAGhaKJ0v3p87XwoRDXLbJx2Lw/edit?usp=sharing",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Prompts and Responses",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RefGgkZHinQ6DnGCGhAGhaKJ0v3p87XwoRDXLbJx2Lw/edit#gid=0"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -256,
+          -112
+        ],
+        "id": "6dcb6311-f2c8-4912-80af-cc207b280ecd",
+        "name": "Get row(s) in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "u6g0aQtH0tqdJWLW",
+            "name": "voxara sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const rows = $input.all();\nfunction normalize(text) {\n  return text\n    .toLowerCase()\n    .replace(/[^\\w\\s]/g, \"\")\n    .replace(/\\s+/g, \" \")\n    .trim();\n}\n\nconst userQ = normalize(\n  $('When chat message received').first().json.chatInput\n);\n\n\nlet bestMatch = null;\nlet score = 0;\n\nlet faqs = \"\";\n\nfor (const item of rows) {\n  const q= item.json.prompts;\n  const a = item.json.responses;\n\n  if (!a) continue;\n\n  faqs += `${q}:${a},`;\n\nconst hits = normalize(q)\n  .split(\" \")\n  .filter(w => userQ.includes(w)).length;\n\n\n  if (hits > score) {\n    score = hits;\n    bestMatch = item.json;\n  }\n}\n\nreturn [{\nanswer: score >= 4 ? bestMatch.responses : null,\n  confidence: score,\n  faqs\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -32,
+          -112
+        ],
+        "id": "529664cc-753f-48d8-9a50-5285092d57bb",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "b4466813-d399-46c3-824e-319e43c57972",
+                "leftValue": "={{ $json.answer }}",
+                "rightValue": "null",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -480,
+          216
+        ],
+        "id": "a3a45790-f3cd-4b26-9708-44d924d71b1f",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemma-3-1b-it",
+            "mode": "list",
+            "cachedResultName": "models/gemma-3-1b-it"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=You are a customer support assistant for the brand “Bad Apple Brooklyn”.\n\nThe information below contains internal FAQs and brand knowledge.\nUse this information as your ONLY source of truth.\n\nRules:\n- Answer naturally and conversationally.\n- You MAY rephrase answers to sound human.\n- You MUST NOT introduce facts that are not present in the FAQs.\n- If the user greets, respond with a short greeting.\n- If the user asks something unrelated to the FAQs, say you don’t have that information.\n- Do NOT mention the word “FAQ” in your response.\n- Return ONLY the final answer text.\n\nBrand context:\nBad Apple Brooklyn is a streetwear accessories brand inspired by Brooklyn street culture.\n\nKnowledge base:\n{{ $json.faqs }}\n\nUser question:\n{{ $('When chat message received').first().json.chatInput }}\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1,
+        "position": [
+          -480,
+          664
+        ],
+        "id": "b0ca37ae-a4ea-43cf-956c-6e585c3dd01f",
+        "name": "Message a model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "RzKF6qrGvIyvdP3k",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "return [\n  {\n    json: {\n      answer: $input.first().json.content.parts[0].text\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          544,
+          -112
+        ],
+        "id": "823cc8e2-3757-4e85-8f71-95fdac2cec7d",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "jsCode": "return [\n  {\n    json: {\n      answer: $('Code in JavaScript1').first().json.answer\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -480,
+          440
+        ],
+        "id": "a7f087e2-13cf-4d4c-bf3a-904432f1f334",
+        "name": "Code in JavaScript2"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=You are a customer support assistant for the brand “Bad Apple Brooklyn”.\n\nThe information below contains internal FAQs and brand knowledge.\nUse this information as your ONLY source of truth.\n\nRules:\n- Answer naturally and conversationally.\n- You MAY rephrase answers to sound human.\n- You MUST NOT introduce facts that are not present in the FAQs.\n- If the user greets, respond with a short greeting.\n- If the user asks something unrelated to the FAQs, say you don’t have that information.\n- Do NOT mention the word “FAQ” in your response.\n- Return ONLY the final answer text.\n\nBrand context:\nBad Apple Brooklyn is a streetwear accessories brand inspired by Brooklyn street culture.\n\nKnowledge base:\n{{ $json.faqs }}\n\nUser question:\n{{ $('When chat message received').first().json.chatInput }}\n",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          192,
+          -112
+        ],
+        "id": "47b82b6b-c5d6-4783-8b67-d04cc7f4e83f",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "modelName": "models/gemma-3-1b-it",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          264,
+          112
+        ],
+        "id": "8859b15e-7462-4592-a440-f514de32d02f",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "RzKF6qrGvIyvdP3k",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('When chat message received').item.json.sessionId }}",
+          "contextWindowLength": 100
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          352,
+          240
+        ],
+        "id": "449b7789-9c18-4ce8-9e88-2bb9d75be1a4",
+        "name": "Simple Memory"
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [],
+          []
+        ]
+      },
+      "Message a model": {
+        "main": [
+          []
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Taranjit Kaur",
+    "name": "Version dcb5ad55",
+    "description": "",
+    "autosaved": false
+  },
+  "activeVersionId": "dcb5ad55-58ad-4b5c-9021-131d83bbad11",
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "format the sheet response and generate the session ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "final agent answer to be displayed to user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format the sheet response and generate the session ID": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-16T05:00:31.213Z",
+  "id": "PLMsMCdFF0H6EcJ6",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Bad Apple Brooklyn",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -720,
+        -112
+      ],
+      "id": "0d46036c-0022-48de-b1fa-b7448f2c5820",
+      "name": "When chat message received",
+      "webhookId": "5a0fb15a-97b9-4dd3-99be-2001d2276c66"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1RefGgkZHinQ6DnGCGhAGhaKJ0v3p87XwoRDXLbJx2Lw/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Prompts and Responses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RefGgkZHinQ6DnGCGhAGhaKJ0v3p87XwoRDXLbJx2Lw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -496,
+        -112
+      ],
+      "id": "6dcb6311-f2c8-4912-80af-cc207b280ecd",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "u6g0aQtH0tqdJWLW",
+          "name": "voxara sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemma-3-1b-it",
+          "mode": "list",
+          "cachedResultName": "models/gemma-3-1b-it"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a customer support assistant for the brand “Bad Apple Brooklyn”.\n\nThe information below contains internal FAQs and brand knowledge.\nUse this information as your ONLY source of truth.\n\nRules:\n- Answer naturally and conversationally.\n- You MAY rephrase answers to sound human.\n- You MUST NOT introduce facts that are not present in the FAQs.\n- If the user greets, respond with a short greeting.\n- If the user asks something unrelated to the FAQs, say you don’t have that information.\n- Do NOT mention the word “FAQ” in your response.\n- Return ONLY the final answer text.\n- If you find that user told its name once then mention his name in every reply\nBrand context:\nBad Apple Brooklyn is a streetwear accessories brand inspired by Brooklyn street culture.\n\nKnowledge base:\n{{ $json.faqs }}\nRecent conversation (current session only):\n{{ JSON.stringify($json.context) }}\n\nUser question:\n{{ $json.chatInput }}\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -112
+      ],
+      "id": "b0ca37ae-a4ea-43cf-956c-6e585c3dd01f",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RzKF6qrGvIyvdP3k",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst chat = $('When chat message received').first().json;\n\nconst staticData = $getWorkflowStaticData('global');\n\n// --- SESSION CHAT ARRAY (NEW) ---\nstaticData.sessions ??= {};\nstaticData.sessions[chat.sessionId] ??= { chat: [] };\n\n// push USER message\nstaticData.sessions[chat.sessionId].chat.push({\n  role: \"user\",\n  content: chat.chatInput\n});\n\n// keep last 6 messages only\nstaticData.sessions[chat.sessionId].chat =\n  staticData.sessions[chat.sessionId].chat.slice(-6);\n\n// --------------------------------\n\nlet bestMatch = null;\nlet score = 0;\nlet faqs = \"\";\n\nconst userQ = chat.chatInput.toLowerCase();\n\nfor (const item of rows) {\n  const q = item.json.prompts;\n  const a = item.json.responses;\n  if (!q || !a) continue;\n\n  faqs += `Q: ${q}\\nA: ${a}\\n\\n`;\n\n  const hits = q\n    .toLowerCase()\n    .split(\" \")\n    .filter(w => userQ.includes(w)).length;\n\n  if (hits > score) {\n    score = hits;\n    bestMatch = item.json;\n  }\n}\n\nreturn [{\n  json: {\n    sessionId: chat.sessionId,\n    chatInput: chat.chatInput,\n    faqs,\n    confidence: score,\n    context: staticData.sessions[chat.sessionId].chat\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -112
+      ],
+      "id": "529664cc-753f-48d8-9a50-5285092d57bb",
+      "name": "format the sheet response and generate the session ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData(\"global\");\nconst sessionId = $('When chat message received').first().json.sessionId;\n\nconst reply = $input.first().json.content.parts[0].text;\n\n// push ASSISTANT message\nstaticData.sessions[sessionId].chat.push({\n  role: \"assistant\",\n  content: reply\n});\n\n// keep last 6\nstaticData.sessions[sessionId].chat =\n  staticData.sessions[sessionId].chat.slice(-6);\n\nreturn [{\n  json: {\n    answer: reply\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -112
+      ],
+      "id": "823cc8e2-3757-4e85-8f71-95fdac2cec7d",
+      "name": "final agent answer to be displayed to user"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-16T05:00:31.213Z",
+      "createdAt": "2025-12-16T05:00:31.213Z",
+      "role": "workflow:owner",
+      "workflowId": "PLMsMCdFF0H6EcJ6",
+      "projectId": "TKNdb1MCnrHRi1L6"
+    }
+  ],
+  "staticData": {
+    "global": {
+      "sessions": {
+        "831e2c56-e9b7-48cd-85ac-651842406474": {
+          "chat": [
+            {
+              "role": "user",
+              "content": "where do you get ths data"
+            },
+            {
+              "role": "assistant",
+              "content": "Our designs are not exclusively original or created entirely in-house. Instead, they are carefully curated and inspired by global streetwear trends, urban culture, and creative influences from around the world. Each piece is selected to reflect a Brooklyn-inspired street aesthetic while staying aligned with current fashion movements, ensuring our collections feel fresh, relevant, and authentic to streetwear culture."
+            },
+            {
+              "role": "user",
+              "content": "what is your name?"
+            },
+            {
+              "role": "assistant",
+              "content": "BAB Helper."
+            },
+            {
+              "role": "user",
+              "content": "Helloo"
+            },
+            {
+              "role": "assistant",
+              "content": "Helloo! Welcome to Bad Apple Brooklyn! We’re here to help you find your next street style statement."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-06T05:36:04.902Z",
+  "versionId": "c2035761-66be-4cfc-80de-49a0ccde1ca7"
+}
