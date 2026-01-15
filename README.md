@@ -5,6 +5,8 @@ These workflows are created in render(A free server)
   3. Save and publish the workflow
   4. Use it in Code
 
+**How to install n8n on any server**
+here is the documentation URL:[ https://docs.n8n.io/hosting/installation/server-setups/docker-compose/](url)
 
 **How to  create API in n8n?**
 
